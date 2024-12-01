@@ -47,14 +47,13 @@ function Header() {
     >
       <path
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
         d="M1 1l4 4 4-4"
       />
     </svg>
   </a>
-
   {/* Dropdown menu for main services */}
   <div
     id="servicesDropdown"
@@ -88,9 +87,9 @@ function Header() {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M1 1l4 4 4-4"
             />
           </svg>
