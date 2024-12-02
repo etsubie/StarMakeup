@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
@@ -19,6 +20,7 @@ const Signup = () => {
 
   const { loading, error, user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate(); 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -53,6 +55,9 @@ const Signup = () => {
       return;
     }
     dispatch(registerUser(formData));
+    if (!loading && !error) {
+      navigate("/login"); // Redirect to login after successful registration
+    }
   };
 
   return (
@@ -175,13 +180,13 @@ const Signup = () => {
         </form>
         <div className="mt-4 flex items-center w-full text-center">
           <a
-              href="/login"
-               className="text-xs text-gray-500 capitalize text-center w-full"
-             >
-               Already have an account?
-               <span className="text-blue-700 hover:underline"> Log In</span>
-             </a>
-          </div> 
+            href="/login"
+            className="text-xs text-gray-500 capitalize text-center w-full"
+          >
+            Already have an account?
+            <span className="text-blue-700 hover:underline"> Log In</span>
+          </a>
+        </div> 
       </div>
     </section>
   );
