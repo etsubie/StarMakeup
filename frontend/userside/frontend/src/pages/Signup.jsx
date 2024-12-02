@@ -56,7 +56,7 @@ const Signup = () => {
     }
     dispatch(registerUser(formData));
     if (!loading && !error) {
-      navigate("/login"); // Redirect to login after successful registration
+      navigate("/"); // Redirect to login after successful registration
     }
   };
 

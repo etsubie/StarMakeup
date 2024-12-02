@@ -26,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     dispatch(loginUser(formData));
     if (!loading && !error) {
-      navigate("/about"); registration
+      navigate("/"); registration
     }
   };
 
