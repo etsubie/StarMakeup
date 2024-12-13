@@ -1,10 +1,11 @@
+// src/partials/Sidebar.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux"; // Import useSelector to access Redux state
 import { NavLink, useLocation } from "react-router-dom";
 import logo from "../images/logo.png";
 
 import Mangside from "./Mangside";
-import Cordside from "./Cordside";
+//import Cordside from "./Cordside";
 import Instside from "./Instside";
 
 function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
@@ -19,8 +20,18 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true"
   );
 
-  // Get user role from Redux state
-  const userRole = useSelector((state) => state.auth.user?.role);
+  // Get user role from Redux state, with a fallback to an empty object if user is undefined
+  const user = useSelector((state) => state.auth?.user);
+  
+  if(!user) {
+    return (
+      <div className="text-center text-gray-500">
+        Please log in to see the sidebar options.
+      </div>
+    );
+  }
+
+  const userRole = user?.role;
 
   // Close on click outside
   useEffect(() => {
@@ -103,10 +114,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen, variant = "default" }) {
 
         {/* Role-Based Rendering */}
         {userRole === "Manager" && <Mangside />}
-        {userRole === "Coordinator" && <Cordside />}
+        
         {userRole === "Instructor" && <Instside />}
         {!userRole && <div>Please log in to see the sidebar options</div>}
-
+        
         {/* Expand / collapse button */}
         <div className="pt-3 hidden lg:inline-flex 2xl:hidden justify-end mt-auto">
           <div className="w-12 pl-4 pr-3 py-2">

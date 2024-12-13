@@ -1,158 +1,126 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../redux/actions"; // Assuming you have actions to handle login
-import { setErrorMessage } from "../redux/actions"; // Action to set error message in Redux store
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import jwt_decode from 'jwt-decode';
+import api from '../api/api';
+import { setToken } from '../redux/authSlice';
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // State for storing email
-  const [username, setUsername] = useState(""); // State for storing username
-  const [password, setPassword] = useState(""); // State for storing password
-  const [role, setRole] = useState("coordinator"); // Role state (default to 'coordinator')
-  const [error, setError] = useState(""); // Local state for error messages
-  const [loginWithEmail, setLoginWithEmail] = useState(true); // Toggle between email or username login
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [error, setError] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const dispatch = useDispatch(); // Redux dispatch to call actions
-  const navigate = useNavigate(); // Hook to navigate after login
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    // Simple validation
-    if ((!email && !username) || !password || !role) {
-      setError("All fields are required.");
-      return;
-    }
+    e.preventDefault();
+    setError(''); // Reset error state
 
     try {
-      // Dispatch login action with username or email
-      const credentials = {
-        email: loginWithEmail ? email : null,
-        username: loginWithEmail ? null : username,
-        password,
-        role,
-      };
+      const response = await api.post('/login', formData);
+      const { token } = response.data;
 
-      const userData = await dispatch(loginUser(credentials));
+      // Save token in Redux
+      dispatch(setToken(token));
 
-      if (userData) {
-        // Redirect to different dashboards based on the role
-        if (role === "admin") {
-          navigate("/admin-dashboard"); // Admin dashboard
-        } else {
-          navigate("/user-dashboard"); // Coordinator or Instructor dashboard
-        }
+      // Decode token to retrieve user role
+      const { role } = jwt_decode(token);
+
+      // Navigate based on role
+      switch (role) {
+        case 'manager':
+          navigate('/manager/Dashboard');
+          break;
+        case 'Coordinator':
+          navigate('/coordinator/Coodashboard');
+          break;
+        default:
+          navigate('/'); // Default route if role is unrecognized
       }
-    } catch (error) {
-      // Handle error if login fails
-      setError("Invalid email, username, password, or role.");
-      dispatch(setErrorMessage("Login failed. Please try again.")); // Optional: Dispatch error message to Redux
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid username or password. Please try again.');
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96">
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-96">
+        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
 
-        {/* Display error message if any */}
-        {error && <div className="bg-red-500 text-white p-2 rounded mb-4">{error}</div>}
+        {/* Display error message */}
+        {error && (
+          <p className="bg-red-100 text-red-700 p-2 rounded mb-4" role="alert">
+            {error}
+          </p>
+        )}
 
+        {/* Login form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="loginOption" className="block text-sm font-medium text-gray-600">Login with</label>
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="loginOption"
-                  checked={loginWithEmail}
-                  onChange={() => setLoginWithEmail(true)}
-                  className="mr-2"
-                />
-                Email
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="loginOption"
-                  checked={!loginWithEmail}
-                  onChange={() => setLoginWithEmail(false)}
-                  className="mr-2"
-                />
-                Username
-              </label>
-            </div>
-          </div>
-
-          {/* Email or Username input */}
-          {loginWithEmail ? (
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-600">Email</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-          ) : (
-            <div className="mb-4">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-600">Username</label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
-                placeholder="Enter your username"
-                required
-              />
-            </div>
-          )}
-
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-600">Password</label>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Username
+            </label>
             <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter your username"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
-              placeholder="Enter your password"
+              aria-label="Enter your username"
               required
             />
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="role" className="block text-sm font-medium text-gray-600">Role</label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
             >
-              <option value="admin">Manager</option>
-              <option value="coordinator">Coordinator</option>
-              <option value="instructor">Instructor</option>
-            </select>
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
+              aria-label="Enter your password"
+              required
+            />
           </div>
 
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none"
+            aria-label="Login"
           >
             Login
           </button>
         </form>
 
+        {/* Sign up link */}
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:underline">Sign up</a>
+            Don't have an account?{' '}
+            <a href="/signup" className="text-blue-600 hover:underline">
+              Sign up
+            </a>
           </p>
         </div>
       </div>
