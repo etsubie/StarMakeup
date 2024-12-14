@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/userSlice";
+import { loginStart } from '../store/authSlice';
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import Context from '../context';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  
   const navigate = useNavigate();
+  const { fetchUserDetails } = useContext(Context);
+
   const { loading, error, user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -24,9 +28,11 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser(formData));
+    dispatch(loginStart(formData)); 
+
     if (!loading && !error) {
-      navigate("/about"); registration
+      navigate("/"); // Redirect after successful login
+      fetchUserDetails(); // Fetch user details after login
     }
   };
 
@@ -98,6 +104,7 @@ const Login = () => {
               <button
                 className="bg-pink-400 text-white font-bold py-2 px-4 w-full rounded hover:bg-blue-600"
                 type="submit"
+                disabled={loading} // Disable button while loading
               >
                 Login
               </button>
@@ -109,7 +116,7 @@ const Login = () => {
               href="/signup"
               className="text-xs text-gray-500 capitalize text-center w-full"
             >
-              Don&apos;t have any account yet?
+              Don&apos;t have an account yet?
               <span className="text-blue-700 hover:underline"> Sign Up</span>
             </a>
           </div>

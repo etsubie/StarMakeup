@@ -34,7 +34,7 @@ const Home = () => {
           <div className="sm:w-2/3 lg:w-2/5 flex flex-col relative z-20 ml-4 mt-3 sm:pl-3">
             <span className="w-20 h-2 bg-custom-pink dark:bg-white mb-6"></span>
             <h1 className="font-bebas-neue uppercase text-xl sm:text-3xl font-black flex flex-col leading-none dark:text-white text-gray-800 mb-4">
-              Discover the Art of Beauty
+              Discover the Art of Beauty-
               <span className="sm:text-3xl">Transform, Empower & Shine</span>
             </h1>
             <p className="text-lg sm:text-2xl text-gray-700 dark:text-white mb-4">
@@ -43,13 +43,13 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row sm:space-x-4 mt-8">
             <a
                 href="#"
-                className="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-custom-pink  dark:text-white hover:bg-custom-pink hover:text-white text-md"
+                className="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-custom-pink hover:bg-custom-pink hover:text-white text-md"
               >
                 Book an appointment
               </a>
               <a
                 href="#"
-                className="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-custom-pink  dark:text-white hover:bg-custom-pink hover:text-white text-md"
+                className="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-custom-pink hover:bg-custom-pink hover:text-white text-md"
               >
                 Explore Our Courses
               </a>
