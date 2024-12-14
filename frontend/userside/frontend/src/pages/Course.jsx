@@ -169,18 +169,18 @@
 //   }
 // `;
 
-// export default Course;
+// // export default Course;
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchCoursesStart } from '../store/courseSlice';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
-const MAX_DESCRIPTION_LENGTH = 100; // Limit description length
+const MAX_DESCRIPTION_LENGTH = 100;
 
 const Course = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
   const { data: courses, loading, error } = useSelector((state) => state.courses);
 
   useEffect(() => {
@@ -188,16 +188,30 @@ const Course = () => {
   }, [dispatch]);
 
   const handleRegister = (courseId) => {
-    // Navigate to the registration page and pass the courseId as state
     navigate('/register', { state: { courseId } });
   };
 
-  const truncateText = (text, maxLength) => {
-    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  const truncateText = (text, maxLength) =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+
+  const groupBySchedule = (courses) => {
+    const grouped = {};
+    courses.forEach((course) => {
+      course.schedules.forEach((schedule) => {
+        const scheduleKey = schedule.type.join(', ');
+        if (!grouped[scheduleKey]) {
+          grouped[scheduleKey] = [];
+        }
+        grouped[scheduleKey].push(course);
+      });
+    });
+    return grouped;
   };
 
   if (loading) return <p>Loading courses...</p>;
   if (error) return <p>Error fetching courses: {error}</p>;
+
+  const groupedCourses = groupBySchedule(courses);
 
   return (
     <StyledWrapper>
@@ -206,40 +220,41 @@ const Course = () => {
           Our Courses
         </h1>
         <div className="underlin h-0.5 mx-96 text-center bg-custom-pink mb-10"></div>
-        <div className="course-container">
-          {courses.map((course) => (
-            <div className="flip-card" key={course._id}>
-              <div className="flip-card-inner">
-                <div className="flip-card-front">
-                  <img
-                    src="../img/default.jpg" // Replace with `course.image` if available
-                    alt={course.name}
-                    className="course-image"
-                  />
-                  <p className="title">{course.name}</p>
-                  <p className="description">{truncateText(course.description, MAX_DESCRIPTION_LENGTH)}</p>
-                  <div className="schedules">
-                    {course.schedules.map((schedule, index) => (
-                      <div key={index} className="schedule">
-                        <span className="schedule-title">{schedule.type.join(', ')}</span>
-                        <span className="schedule-time">
-                          {schedule.startTime} - {schedule.endTime}
-                        </span>
+        <div className="grouped-container">
+          {Object.entries(groupedCourses).map(([scheduleKey, scheduleCourses]) => (
+            <div key={scheduleKey} className="schedule-group">
+              <h2 className="schedule-header">{scheduleKey}</h2>
+              <div className="course-container">
+                {scheduleCourses.map((course) => (
+                  <div className="flip-card" key={course._id}>
+                    <div className="flip-card-inner">
+                      <div className="flip-card-front">
+                        <img
+                          src="../img/nail2.jpg"
+                          alt={course.name}
+                          className="course-image"
+                        />
+                        <p className="title">{course.name}</p>
+                        <p className="description">
+                          {truncateText(course.description, MAX_DESCRIPTION_LENGTH)}
+                        </p>
                       </div>
-                    ))}
+                      <div className="flip-card-back">
+                        <p className="title">{course.name}</p>
+                        <p className="description">
+                          {truncateText(course.description, MAX_DESCRIPTION_LENGTH)}
+                        </p>
+                        <p className="price">{course.fee} Birr</p>
+                        <button
+                          className="register-btn"
+                          onClick={() => handleRegister(course._id)}
+                        >
+                          Register
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="flip-card-back">
-                  <p className="title">{course.name}</p>
-                  <p className="description">{truncateText(course.description, MAX_DESCRIPTION_LENGTH)}</p>
-                  <p className="price">{course.fee} Birr</p>
-                  <button
-                    className="register-btn"
-                    onClick={() => handleRegister(course._id)}
-                  >
-                    Register
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
           ))}
@@ -250,6 +265,24 @@ const Course = () => {
 };
 
 const StyledWrapper = styled.div`
+  .grouped-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .schedule-group {
+    margin-bottom: 30px;
+  }
+
+  .schedule-header {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-left: 3%;
+    margin-bottom: 20px;
+    color: coral;
+  }
+
   .course-container {
     display: flex;
     flex-wrap: wrap;
@@ -259,7 +292,7 @@ const StyledWrapper = styled.div`
 
   .flip-card {
     background-color: transparent;
-    width: 30%; /* 3 cards per row */
+    width: 30%;
     height: 450px;
     perspective: 1000px;
     margin: 10px;
@@ -342,31 +375,15 @@ const StyledWrapper = styled.div`
     cursor: pointer;
   }
 
-  .schedules {
-    margin-top: 10px;
-  }
-
-  .schedule {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9em;
-    margin: 5px 0;
-  }
-
-  .schedule-title {
-    font-weight: bold;
-    color: coral;
-  }
-
   @media (max-width: 1024px) {
     .flip-card {
-      width: 45%; /* 2 cards per row */
+      width: 45%;
     }
   }
 
   @media (max-width: 768px) {
     .flip-card {
-      width: 90%; /* 1 card per row */
+      width: 90%;
     }
   }
 `;
