@@ -1,7 +1,26 @@
-// import React from 'react';
+// import React, { useEffect } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
 // import styled from 'styled-components';
+// import { fetchCoursesStart } from '../store/courseSlice';
+// import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // const Course = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate(); // Initialize navigate
+//   const { data: courses, loading, error } = useSelector((state) => state.courses);
+
+//   useEffect(() => {
+//     dispatch(fetchCoursesStart());
+//   }, [dispatch]);
+
+//   const handleRegister = (courseId) => {
+//     // Navigate to the registration page and pass the courseId as state
+//     navigate('/register', { state: { courseId } });
+//   };
+
+//   if (loading) return <p>Loading courses...</p>;
+//   if (error) return <p>Error fetching courses: {error}</p>;
+
 //   return (
 //     <StyledWrapper>
 //       <section className="py-12 relative">
@@ -10,38 +29,32 @@
 //         </h1>
 //         <div className="underlin h-0.5 mx-96 text-center bg-custom-pink mb-10"></div>
 //         <div className="course-container">
-//           {Array(6)
-//             .fill("")
-//             .map((_, index) => (
-//               <div className="flip-card" key={index}>
-//                 <div className="flip-card-inner">
-//                   <div className="flip-card-front">
-//                     <img
-//                       src={`../img/${index % 2 === 0 ? "nail2.jpg" : "makeup.jpg"}`}
-//                       alt="Course"
-//                       className="course-image"
-//                     />
-//                     <p className="title">{index % 2 === 0 ? "Nail Learning Course" : "Makeup Class"}</p>
-//                     <p className="description">
-//                       {index % 2 === 0
-//                         ? "Master the art of nail design with our expert-led course."
-//                         : "Learn professional makeup techniques in this comprehensive course."}
-//                     </p>
-//                   </div>
-//                   <div className="flip-card-back">
-//                     <p className="title">{index % 2 === 0 ? "Nail Learning Course" : "Makeup Class"}</p>
-//                     <p className="description">
-//                       {index % 2 === 0
-//                         ? "Learn advanced techniques and become a professional nail artist."
-//                         : "Become a certified makeup artist with advanced skills."}
-//                     </p>
-//                     <p className="price">{index % 2 === 0 ? "10,000 Birr" : "20,000 Birr"}</p>
-//                     {/* <button className="register-btn">Register</button> */}
-//                     <a href="/register" className="register-btn">Register</a>
-//                   </div>
+//           {courses.map((course) => (
+//             <div className="flip-card" key={course._id}>
+//               <div className="flip-card-inner">
+//                 <div className="flip-card-front">
+//                   <img
+//                     src="../img/default.jpg" // Replace with `course.image` if available
+//                     alt={course.name}
+//                     className="course-image"
+//                   />
+//                   <p className="title">{course.name}</p>
+//                   <p className="description">{course.description}</p>
+//                 </div>
+//                 <div className="flip-card-back">
+//                   <p className="title">{course.name}</p>
+//                   <p className="description">{course.description}</p>
+//                   <p className="price">{course.fee} Birr</p>
+//                   <button
+//                     className="register-btn"
+//                     onClick={() => handleRegister(course._id)}
+//                   >
+//                     Register
+//                   </button>
 //                 </div>
 //               </div>
-//             ))}
+//             </div>
+//           ))}
 //         </div>
 //       </section>
 //     </StyledWrapper>
@@ -49,6 +62,8 @@
 // };
 
 // const StyledWrapper = styled.div`
+//   /* Existing styles here */
+
 //   .course-container {
 //     display: flex;
 //     flex-wrap: wrap;
@@ -155,15 +170,13 @@
 // `;
 
 // export default Course;
-
-
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchCoursesStart } from '../store/courseSlice';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-
+const MAX_DESCRIPTION_LENGTH = 100; // Limit description length
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -177,6 +190,10 @@ const Course = () => {
   const handleRegister = (courseId) => {
     // Navigate to the registration page and pass the courseId as state
     navigate('/register', { state: { courseId } });
+  };
+
+  const truncateText = (text, maxLength) => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
 
   if (loading) return <p>Loading courses...</p>;
@@ -200,11 +217,21 @@ const Course = () => {
                     className="course-image"
                   />
                   <p className="title">{course.name}</p>
-                  <p className="description">{course.description}</p>
+                  <p className="description">{truncateText(course.description, MAX_DESCRIPTION_LENGTH)}</p>
+                  <div className="schedules">
+                    {course.schedules.map((schedule, index) => (
+                      <div key={index} className="schedule">
+                        <span className="schedule-title">{schedule.type.join(', ')}</span>
+                        <span className="schedule-time">
+                          {schedule.startTime} - {schedule.endTime}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="flip-card-back">
                   <p className="title">{course.name}</p>
-                  <p className="description">{course.description}</p>
+                  <p className="description">{truncateText(course.description, MAX_DESCRIPTION_LENGTH)}</p>
                   <p className="price">{course.fee} Birr</p>
                   <button
                     className="register-btn"
@@ -223,8 +250,6 @@ const Course = () => {
 };
 
 const StyledWrapper = styled.div`
-  /* Existing styles here */
-
   .course-container {
     display: flex;
     flex-wrap: wrap;
@@ -235,7 +260,7 @@ const StyledWrapper = styled.div`
   .flip-card {
     background-color: transparent;
     width: 30%; /* 3 cards per row */
-    height: 400px;
+    height: 450px;
     perspective: 1000px;
     margin: 10px;
   }
@@ -315,6 +340,22 @@ const StyledWrapper = styled.div`
     border-radius: 5px;
     font-size: 1em;
     cursor: pointer;
+  }
+
+  .schedules {
+    margin-top: 10px;
+  }
+
+  .schedule {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin: 5px 0;
+  }
+
+  .schedule-title {
+    font-weight: bold;
+    color: coral;
   }
 
   @media (max-width: 1024px) {
