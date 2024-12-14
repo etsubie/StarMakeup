@@ -6,7 +6,7 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { BsPersonCircle } from "react-icons/bs";
 import imageTobase64 from "../helpers/imageTobase64";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../store/userSlice";
+import { registerStart } from '../store/authSlice';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -54,9 +54,9 @@ const Signup = () => {
       alert("Passwords do not match!");
       return;
     }
-    dispatch(registerUser(formData));
+    dispatch(registerStart(formData));
     if (!loading && !error) {
-      navigate("/"); // Redirect to login after successful registration
+      navigate("/login"); 
     }
   };
 

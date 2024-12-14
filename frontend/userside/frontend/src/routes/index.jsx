@@ -7,6 +7,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import About from '../pages/About';
 import SalonServices from '../pages/SalonServices';
 import Course from '../pages/Course';
+import Registration from '../pages/Registration';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
         element : <Signup />
       },
       {
+        path : "register",
+        element : <Registration/>
+      },
+      {
         path : "forgotpassword",
         element : <ForgotPassword />
       },
@@ -44,5 +49,4 @@ const router = createBrowserRouter([
     ]
   }
 ])
-
 export default router;
