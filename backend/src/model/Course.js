@@ -7,14 +7,14 @@ export const scheduleSchema = new Schema({
     type: [String], // Array of types
     required: true,
   },
-  startTime: {
-    type: String,
-    required: true,
-  },
-  endTime: {
-    type: String,
-    required: true,
-  },
+  // startTime: {
+  //   type: String,
+  //   required: true,
+  // },
+  // endTime: {
+  //   type: String,
+  //   required: true,
+  // },
 });
 
 const courseSchema = new Schema(

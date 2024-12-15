@@ -8,7 +8,7 @@ const enrollmentSchema = new Schema(
     enrollmentDate: { type: Date, default: Date.now },
     status: {
       type: String,
-      enum: ["active", "completed", "withdrawn", "pending"],
+      enum: ["active", "inactive"],
       default: "active",
     },
     paymentStatus: {
