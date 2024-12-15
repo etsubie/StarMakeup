@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs"
 import Role from "../model/Role.js";
 import Staff from "../model/Staff.js";
-import StaffPermission from "../model/StaffPermission.js";
 
 // Create a new staff
 export const createStaff = async (req, res) => {
@@ -164,7 +163,7 @@ export const getStaff = async (req, res) => {
 // Update a staff
 export const updatestaff = async (req, res) => {
   const { id } = req.params;
-  const { name, username, password, phone, roleName, permissionNames } = req.body;
+  const { name, username, password, phone, roleName } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
@@ -213,28 +212,6 @@ export const updatestaff = async (req, res) => {
           .json({ success: false, message: `Role '${roleName}' not found` });
       }
       updateData.role = role._id;
-    }
-
-    // Validate and update permissions if provided
-    if (permissionNames && permissionNames.length > 0) {
-      const permissions = await Permission.find({
-        name: { $in: permissionNames },
-      });
-      if (permissions.length !== permissionNames.length) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Some permissions not found" });
-      }
-
-      // Remove existing permissions
-      await StaffPermission.deleteMany({ staffId: id });
-
-      // Insert new permissions
-      const staffPermissionData = permissions.map((permission) => ({
-        staffId: id,
-        permissionId: permission._id,
-      }));
-      await StaffPermission.insertMany(staffPermissionData);
     }
 
     // Update the staff document

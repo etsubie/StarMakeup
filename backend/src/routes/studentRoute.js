@@ -15,15 +15,12 @@ const studentRoute = express.Router();
 // Route to create a new student
 studentRoute.post(
   "/:courseId/register",
-  verifyToken,
-  authorizeRole("Customer"),
   registerStudentWithCourse
 );
 
 // Route to create a new student
 studentRoute.post(
   "/:courseId/register-student",
-
   verifyToken,
   authorizeRole("Manager", "Registrar"),
   registerStudent

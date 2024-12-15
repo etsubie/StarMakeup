@@ -2,6 +2,58 @@ import Staff from "../../model/Staff.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 
+export const createStaff = async (req, res) => {
+  const {
+    name,
+    phone,
+    username,
+    password,
+    roleName,
+    passwordConfirmation,
+  } = req.body;
+
+  try {
+    // Check if the staff with the same username already exists
+    const existingstaff = await Staff.findOne({ username });
+    if (existingstaff) {
+      return res
+        .status(400)
+        .json({ success: false, message: "staff username already exists" });
+    }
+
+    // Find the role by name
+    const role = await Role.findOne({ name: roleName });
+    if (!role) {
+      return res
+        .status(400)
+        .json({ success: false, message: `Role '${roleName}' not found` });
+    }
+
+    const staffData = {
+      phone,
+      name,
+      username,
+      password,
+      passwordConfirmation,
+      role: role._id,
+    };
+
+    // Create the new staff
+    const newstaff = new Staff(staffData);
+    await newstaff.save();
+
+    return res
+      .status(201)
+      .json({
+        success: true,
+        message: "staff created successfully",
+        staff: newstaff,
+      });
+  } catch (error) {
+    console.error("Error creating staff:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 // Login a user
 export const loginSatff = async (req, res) => {
     const { username, password } = req.body;
