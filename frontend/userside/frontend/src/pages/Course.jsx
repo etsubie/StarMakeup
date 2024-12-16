@@ -262,7 +262,7 @@ const Course = () => {
       </section>
     </StyledWrapper>
   );
-};
+}; 
 
 const StyledWrapper = styled.div`
   .grouped-container {

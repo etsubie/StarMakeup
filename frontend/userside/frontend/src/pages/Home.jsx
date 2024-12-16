@@ -48,7 +48,7 @@ const Home = () => {
                 Book an appointment
               </a>
               <a
-                href="#"
+                href="/course"
                 className="uppercase py-2 px-4 rounded-lg bg-transparent border-2 border-custom-pink hover:bg-custom-pink hover:text-white text-md"
               >
                 Explore Our Courses
