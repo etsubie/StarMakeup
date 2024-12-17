@@ -1,128 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import jwt_decode from 'jwt-decode';
-import api from '../api/api';
-import { setToken } from '../redux/authSlice';
+import jwtDecode from 'jwt-decode';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const dispatch = useDispatch();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const isExpired = decodedToken.exp * 1000 < Date.now();
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
+        if (isExpired) {
+          localStorage.removeItem('token');
+          return;
+        }
+
+        setIsLoggedIn(true);
+        setUserRole(decodedToken.role.name);
+
+        if (decodedToken.role.name === 'Manager') {
+          navigate('/manager/dashboard');
+        } else {
+          navigate('/coordinator/coodashboard');
+        }
+      } catch (error) {
+        console.error('Token decoding error:', error);
+        localStorage.removeItem('token');
+      }
+    }
+  }, [navigate]);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error state
+    setError('');
+    setLoading(true);
 
     try {
-      const response = await api.post('/login', formData);
-      const { token } = response.data;
+      const response = await axios.post('http://localhost:4200/api/login', { username, password });
+      localStorage.setItem('token', response.data.token);
+      setIsLoggedIn(true);
+      setUsername('');
+      setPassword('');
 
-      // Save token in Redux
-      dispatch(setToken(token));
+      const decodedToken = jwtDecode(response.data.token);
+      setUserRole(decodedToken.role.name);
 
-      // Decode token to retrieve user role
-      const { role } = jwt_decode(token);
-
-      // Navigate based on role
-      switch (role) {
-        case 'manager':
-          navigate('/manager/Dashboard');
-          break;
-        case 'Coordinator':
-          navigate('/coordinator/Coodashboard');
-          break;
-        default:
-          navigate('/'); // Default route if role is unrecognized
+      if (decodedToken.role.name === 'Manager') {
+        navigate('/manager/dashboard');
+      } else {
+        navigate('/coordinator/coodashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid username or password. Please try again.');
+      console.error("Login Error:", err);
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-96">
-        <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
-
-        {/* Display error message */}
-        {error && (
-          <p className="bg-red-100 text-red-700 p-2 rounded mb-4" role="alert">
-            {error}
-          </p>
-        )}
-
-        {/* Login form */}
-        <form onSubmit={handleSubmit}>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Username
-            </label>
+            <label className="block text-gray-700">Username</label>
             <input
               type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your username"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
-              aria-label="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
+              className="mt-1 block w-full border border-gray-300 rounded p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
           </div>
-
           <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
+            <label className="block text-gray-700">Password</label>
             <input
               type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mt-1"
-              aria-label="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
+              className="mt-1 block w-full border border-gray-300 rounded p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
             />
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none"
-            aria-label="Login"
+            disabled={loading}
+            className={`w-full bg-blue-500 text-white font-bold py-2 rounded hover:bg-blue-600 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-
-        {/* Sign up link */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              Sign up
-            </a>
-          </p>
-        </div>
+        {isLoggedIn && <p className="text-green-500 mt-4">You are logged in as {userRole}!</p>}
       </div>
     </div>
   );

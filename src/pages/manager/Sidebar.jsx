@@ -258,7 +258,7 @@ function Sidebar({
             <li className="mb-1 last:mb-0">
               <NavLink
                 end
-                to="Registral"
+                to="/manager/Registral"
                 className={({ isActive }) =>
                   `block transition duration-150 truncate ${
                     isActive
@@ -363,7 +363,7 @@ function Sidebar({
         {(handleClick, open) => (
           <>
             <NavLink
-              to="/RoleManage"
+              to="/manager/RoleManage"
               className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
                 pathname.includes("payment") ? "" : "hover:text-gray-900 dark:hover:text-white"
               }`}
@@ -397,7 +397,7 @@ function Sidebar({
         {(handleClick, open) => (
           <>
             <NavLink
-              to="/Course"
+              to="/manager/createcourse"
               className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
                 pathname.includes("Course") ? "" : "hover:text-gray-900 dark:hover:text-white"
               }`}
@@ -465,7 +465,7 @@ function Sidebar({
         {(handleClick, open) => (
           <>
             <NavLink
-              to="/Appointment"
+              to="/manager/Appointment"
               className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${
                 pathname.includes("appointment") ? "" : "hover:text-gray-900 dark:hover:text-white"
               }`}
@@ -531,7 +531,7 @@ function Sidebar({
                           <li className="mb-1 last:mb-0">
                             <NavLink
                               end
-                              to="FeedCustomer"
+                              to="/manager/FeedCustomer"
                               className={({ isActive }) =>
                                 "block transition duration-150 truncate " + (isActive ? "text-violet-500" : "text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200")
                               }
@@ -648,73 +648,10 @@ function Sidebar({
           </div>
           {/* More group */}
           <div>
-            <h3 className="text-xs uppercase text-gray-400 dark:text-gray-500 font-semibold pl-3">
-              <span className="hidden lg:block lg:sidebar-expanded:hidden 2xl:hidden text-center w-6" aria-hidden="true">
-                •••
-              </span>
-              <span className="lg:hidden lg:sidebar-expanded:block 2xl:block">More</span>
-            </h3>
+          
             <ul className="mt-3">
               {/* Authentication */}
-              <SidebarLinkGroup>
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <a
-                        href="#0"
-                        className={`block text-gray-800 dark:text-gray-100 truncate transition duration-150 ${open ? "" : "hover:text-gray-900 dark:hover:text-white"}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleClick();
-                          setSidebarExpanded(true);
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <svg className={`shrink-0 fill-current text-gray-400 dark:text-gray-500`} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                              <path d="M11.442 4.576a1 1 0 1 0-1.634-1.152L4.22 11.35 1.773 8.366A1 1 0 1 0 .227 9.634l3.281 4a1 1 0 0 0 1.59-.058l6.344-9ZM15.817 4.576a1 1 0 1 0-1.634-1.152l-5.609 7.957a1 1 0 0 0-1.347 1.453l.656.8a1 1 0 0 0 1.59-.058l6.344-9Z" />
-                            </svg>
-                            <span className="text-sm font-medium ml-4 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                              Authentication
-                            </span>
-                          </div>
-                          {/* Icon */}
-                          <div className="flex shrink-0 ml-2">
-                            <svg className={`w-3 h-3 shrink-0 ml-1 fill-current text-gray-400 dark:text-gray-500 ${open && "rotate-180"}`} viewBox="0 0 12 12">
-                              <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
-                            </svg>
-                          </div>
-                        </div>
-                      </a>
-                      <div className="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                        <ul className={`pl-8 mt-1 ${!open && "hidden"}`}>
-                          <li className="mb-1 last:mb-0">
-                            <NavLink end to="https://cruip.com/mosaic/ dark:hover:text-gray-200 transition duration-150 truncate">
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Sign in
-                              </span>
-                            </NavLink>
-                          </li>
-                          <li className="mb-1 last:mb-0">
-                            <NavLink end to="https://cruip.com/mosaic/ dark:hover:text-gray-200 transition duration-150 truncate">
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Sign up
-                              </span>
-                            </NavLink>
-                          </li>
-                          <li className="mb-1 last:mb-0">
-                            <NavLink end to="https://cruip.com/mosaic/ hover:text-gray-700 dark:hover:text-gray-200 transition duration-150 truncate">
-                              <span className="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                Reset Password
-                              </span>
-                            </NavLink>
-                          </li>
-                        </ul>
-                      </div>
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
+             
               {/* Onboarding */}
            
               {/* Components */}

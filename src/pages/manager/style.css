@@ -1,0 +1,18 @@
+/* styles.css */
+body {
+    background-color: #f3f4f6; /* Light background for the entire body */
+  }
+  
+  input,
+  textarea {
+    transition: border-color 0.3s ease;
+  }
+  
+  input:focus,
+  textarea:focus {
+    border-color: #3b82f6; /* Blue border on focus */
+  }
+  
+  button {
+    transition: background-color 0.3s ease;
+  }
