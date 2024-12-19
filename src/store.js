@@ -1,18 +1,36 @@
+// import { configureStore } from '@reduxjs/toolkit';
+// import createSagaMiddleware from 'redux-saga';
+//  import authReducer from '../../redux/reducer';
+// import authSaga from '../../redux/roleSaga';
+
+// const sagaMiddleware = createSagaMiddleware();
+
+// const store = configureStore({
+//   reducer: {
+//     auth: authReducer,
+//   },
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
+// });
+
+// sagaMiddleware.run(authSaga);
+
+// export default store;
+
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import authReducer from './features/auth/authSlice';
-import authSaga from './features/auth/authSaga';
+import rolesReducer from './rolesSlice';
+import rolesSaga from './rolesSaga';
 
 const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
   reducer: {
-    auth: authReducer,
+    roles: rolesReducer,  // Ensure the roles reducer is set correctly
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
 });
 
-sagaMiddleware.run(authSaga);
+sagaMiddleware.run(rolesSaga);
 
 export default store;
